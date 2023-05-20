@@ -1,0 +1,11 @@
+{
+  "rust-analyzer.linkedProjects": [
+    "./libs/class_parser/Cargo.toml",
+    "./Cargo.toml",
+    "./libs/class_parser/Cargo.toml",
+    "./libs/class_parser/Cargo.toml",
+    "./libs/class_parser/Cargo.toml"
+  ],
+
+  "editor.formatOnSave": true,
+}

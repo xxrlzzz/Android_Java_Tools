@@ -1,5 +1,10 @@
 use std::cell::Cell;
 
+use base::RenderSource;
+use class_parser::{
+  attribute::{AttributeInfo, CODE_ATTRIBUTE_NAME},
+  raw_class::ClassFile,
+};
 use crossterm::event::{KeyCode, KeyEvent};
 use tui::{
   backend::Backend,
@@ -10,12 +15,9 @@ use tui::{
   Frame,
 };
 
-use crate::attribute::{AttributeInfo, CODE_ATTRIBUTE_NAME};
-
 use super::{
   stateful_paragraph::{ParagraphState, StatefulParagraph},
-  stateful_select_list::ListExample,
-  RenderSource,
+  stateful_select_list::SelectableList,
 };
 
 pub struct App<'a> {
@@ -23,12 +25,12 @@ pub struct App<'a> {
   pub index: usize,
 
   pub class_file: &'a dyn RenderSource,
-  list: ListExample<'a, String>,
+  list: SelectableList<'a, String>,
   constant_pool_state: Cell<ParagraphState>,
 }
 
 impl<'a> App<'a> {
-  pub fn new(class_file: &'a dyn RenderSource) -> App<'a> {
+  pub fn new(class_file: &'a ClassFile) -> App<'a> {
     let method_list: Vec<(&str, String)> = class_file
       .render_methods_verbose()
       .into_iter()
@@ -57,7 +59,7 @@ impl<'a> App<'a> {
       ],
       index: 0,
       class_file,
-      list: ListExample::new(method_list, "method"),
+      list: SelectableList::new(method_list, "method"),
       constant_pool_state: Cell::new(ParagraphState::default()),
     }
   }
@@ -160,6 +162,11 @@ impl<'a> App<'a> {
           self.constant_pool_state.set(state);
         } else if self.index == 7 {
           self.list.items.next()
+        }
+      }
+      KeyCode::Enter => {
+        if self.index == 7 {
+          self.list.items.toggle();
         }
       }
       _ => {}

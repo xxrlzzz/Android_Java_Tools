@@ -6,11 +6,12 @@ use crate::{
   constant_pool::ConstantPoolInfo,
   filed::FieldInfo,
   method::MethodInfo,
-  ui::RenderSource,
   Parsable,
 };
+use base::RenderSource;
 use nom::{error::ParseError, multi::count, number::complete::*, sequence::tuple, IResult};
 
+/// https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.10
 pub struct ClassFile {
   magic: u32,
   minor_version: u16,
@@ -125,6 +126,10 @@ impl ClassFile {
     }
     return "Unknown".to_string();
   }
+
+  pub fn render_methods_verbose(&self) -> Vec<&MethodInfo> {
+    self.methods.iter().collect::<Vec<&MethodInfo>>()
+  }
 }
 
 impl Display for ClassFile {
@@ -213,10 +218,6 @@ impl RenderSource for ClassFile {
       .iter()
       .map(|method| method.name().to_string())
       .collect::<Vec<String>>()
-  }
-
-  fn render_methods_verbose(&self) -> Vec<&MethodInfo> {
-    self.methods.iter().collect::<Vec<&MethodInfo>>()
   }
 
   fn render_attributes(&self) -> Vec<String> {

@@ -42,11 +42,11 @@ impl Display for MethodInfo {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(
       f,
-      "access_flags: {}\tname_index: {}\tdescriptor_index: {}",
+      "access_flags: {} name_index: {} descriptor_index: {}",
       self.access_flags, self.name_index, self.descriptor_index
     )?;
     if self.attributes.len() > 0 {
-      write!(f, "\tattributes({}):", self.attributes.len())?;
+      write!(f, " attributes({}):", self.attributes.len())?;
     }
     for attribute in &self.attributes {
       write!(f, " {}", attribute)?;

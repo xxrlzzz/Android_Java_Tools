@@ -2,14 +2,13 @@ use error::Error;
 use raw_class::ClassFile;
 
 mod access_flag;
-mod attribute;
+pub mod attribute;
 mod constant_pool;
 pub mod error;
 mod filed;
 mod method;
 mod opcodes;
 pub mod raw_class;
-pub mod ui;
 
 pub fn add(left: usize, right: usize) -> usize {
   left + right

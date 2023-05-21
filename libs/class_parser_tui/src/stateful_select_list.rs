@@ -14,13 +14,17 @@ use super::reflow::{LineComposer, WordWrapper};
 pub struct StatefulList<T> {
   state: ListState,
   items: Vec<T>,
+  toggle: bool,
 }
 
 impl<T> StatefulList<T> {
   fn with_items(items: Vec<T>) -> StatefulList<T> {
+    let mut state = ListState::default();
+    state.select(Some(0));
     StatefulList {
-      state: ListState::default(),
+      state,
       items,
+      toggle: false,
     }
   }
 
@@ -52,8 +56,16 @@ impl<T> StatefulList<T> {
     self.state.select(Some(i));
   }
 
-  fn unselect(&mut self) {
-    self.state.select(None);
+  // fn unselect(&mut self) {
+  //   self.state.select(None);
+  // }
+
+  pub fn toggle(&mut self) {
+    self.toggle = !self.toggle;
+  }
+
+  fn is_toggled(&self) -> bool {
+    self.toggle
   }
 }
 
@@ -64,14 +76,14 @@ impl<T> StatefulList<T> {
 /// Check the event handling at the bottom to see how to change the state on incoming events.
 /// Check the drawing logic for items on how to specify the highlighting style for selected items.
 #[derive(Clone)]
-pub struct ListExample<'a, T: Display> {
+pub struct SelectableList<'a, T: Display> {
   pub items: StatefulList<(&'a str, T)>,
   title: &'a str,
 }
 
-impl<'a, T: Display> ListExample<'a, T> {
-  pub fn new(items: Vec<(&'a str, T)>, title: &'a str) -> ListExample<'a, T> {
-    ListExample {
+impl<'a, T: Display> SelectableList<'a, T> {
+  pub fn new(items: Vec<(&'a str, T)>, title: &'a str) -> SelectableList<'a, T> {
+    SelectableList {
       items: StatefulList::with_items(items),
       title,
     }
@@ -87,24 +99,29 @@ impl<'a, T: Display> ListExample<'a, T> {
       .bg(Color::LightGreen)
       .add_modifier(Modifier::BOLD);
 
-    let events: Vec<ListItem> = self
+    let selected_idx = self.items.state.selected().unwrap_or(0);
+    let methods: Vec<ListItem> = self
       .items
       .items
       .iter()
-      .map(|e| {
-        let lines = vec![Spans::from(Span::raw(e.0)), Spans::from(Span::raw(""))];
+      .zip(0..)
+      .map(|(e, idx)| {
+        let idx_str = format!("# {}. ", idx);
+        let mut lines = vec![Spans::from(Span::raw(idx_str)), Spans::from(Span::raw(e.0))];
+        if selected_idx == idx && self.items.is_toggled() {
+          // TODO add more information for the selected item.
+          lines.push(Spans::from(Span::raw(format!(" "))));
+        }
         ListItem::new(lines).style(Style::default().fg(Color::Black).bg(Color::White))
       })
       .collect();
 
-    let items = List::new(events)
+    let items = List::new(methods)
       .block(Block::default().borders(Borders::ALL).title(self.title))
       .highlight_style(style)
-      .highlight_symbol("> ");
-    // f.render_widget(items, chunks[0]);
+      .highlight_symbol(if self.items.is_toggled() { "- " } else { "> " });
     f.render_stateful_widget(items, chunks[0], &mut self.items.state);
 
-    // b.render_widget(events, chunks[0]);
     let selected_idx = self.items.state.selected().unwrap_or(0);
     let (item, content) = &self.items.items[selected_idx];
     let text: Text = content.to_string().into();
@@ -122,6 +139,7 @@ impl<'a, T: Display> ListExample<'a, T> {
             style: Style::default(),
           }))
       });
+      // break lines to fit the length.
       let mut line_composer = WordWrapper::new(&mut styled, chunks[1].width, false);
       while let Some((current_line, _)) = line_composer.next_line() {
         let str = current_line

@@ -1,9 +1,6 @@
 use clap::Parser;
-use class_parser::{
-  error::Error,
-  raw_class::ClassFile,
-  ui::{app::App, restore_terminal, run_app, setup_terminal},
-};
+use class_parser::{error::Error, raw_class::ClassFile};
+use class_parser_tui::{app::App, restore_terminal, run_app, setup_terminal};
 
 use std::{path::Path, time::Duration};
 

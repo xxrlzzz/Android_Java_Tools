@@ -49,13 +49,13 @@ pub struct ParagraphState {
 }
 
 impl ParagraphState {
-  pub const fn lines(self) -> u16 {
-    self.lines
-  }
+  // const fn lines(self) -> u16 {
+  //   self.lines
+  // }
 
-  pub const fn height(self) -> u16 {
-    self.height
-  }
+  // const fn height(self) -> u16 {
+  //   self.height
+  // }
 
   pub const fn scroll(self) -> ScrollPos {
     self.scroll

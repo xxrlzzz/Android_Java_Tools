@@ -4,6 +4,8 @@ use nom::{error::ParseError, number::complete::be_u8, IResult};
 
 use crate::Parsable;
 
+/// https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5
+///
 pub mod opcodes_implied {
   use std::collections::HashMap;
 

@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.3.0", features = ["derive"] }
 class_parser = { version = "0.1.0", path = "libs/class_parser" }
+class_parser_tui = { version = "0.1.0", path = "libs/class_parser_tui" }

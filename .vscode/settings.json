@@ -6,7 +6,9 @@
     "./libs/class_parser/Cargo.toml",
     "./libs/class_parser/Cargo.toml",
     "./libs/class_parser/Cargo.toml",
-    "./libs/base/Cargo.toml"
+    "./libs/base/Cargo.toml",
+    "./libs/dex_parser/Cargo.toml",
+    "./libs/class_parser_tui/Cargo.toml"
   ],
 
   "editor.formatOnSave": true,

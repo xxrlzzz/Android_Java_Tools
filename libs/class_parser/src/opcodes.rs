@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use nom::{error::ParseError, number::complete::be_u8, IResult};
 
-use crate::Parsable;
+use base::Parsable;
 
 /// https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5
 ///

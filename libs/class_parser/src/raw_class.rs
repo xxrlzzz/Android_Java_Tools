@@ -1,14 +1,12 @@
 use std::fmt::Display;
 
 use crate::{
-  access_flag::AccessFlags,
   attribute::{parse_attributes, AttributeInfo, SOURCE_FILE_ATTRIBUTE_NAME},
   constant_pool::ConstantPoolInfo,
   filed::FieldInfo,
   method::MethodInfo,
-  Parsable,
 };
-use base::RenderSource;
+use base::{access_flag::AccessFlags, error::Error, Parsable, RenderSource};
 use nom::{error::ParseError, multi::count, number::complete::*, sequence::tuple, IResult};
 
 /// https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.10
@@ -64,15 +62,34 @@ impl ClassFile {
     count(MethodInfo::parse, methods as usize)(bytes)
   }
 
-  pub fn parse_from_u8<'a>(bytes: &'a [u8]) -> Result<Self, crate::error::Error> {
-    Self::_parse_from_u8::<nom::error::Error<_>>(bytes)
+  pub fn parse_from_u8<'a>(bytes: &'a [u8]) -> Result<Self, Error> {
+    Self::parse::<nom::error::Error<_>>(bytes)
       .map(|(_, class)| class)
-      .map_err(|e| crate::error::Error::from(e))
+      .map_err(|e| Error::from(e))
   }
 
-  pub fn _parse_from_u8<'a, E: ParseError<&'a [u8]>>(
-    bytes: &'a [u8],
-  ) -> IResult<&'a [u8], Self, E> {
+  fn source_file_name(&self) -> String {
+    let source_file = self
+      .attributes
+      .iter()
+      .filter(|attr| attr.type_filter(SOURCE_FILE_ATTRIBUTE_NAME))
+      .map(|attr| attr.get_sourcefile())
+      .next();
+    if let Some(source_file) = source_file {
+      if let Some(file_name) = source_file {
+        return file_name.to_string();
+      }
+    }
+    return "Unknown".to_string();
+  }
+
+  pub fn render_methods_verbose(&self) -> Vec<&MethodInfo> {
+    self.methods.iter().collect::<Vec<&MethodInfo>>()
+  }
+}
+
+impl Parsable for ClassFile {
+  fn parse<'a, E: ParseError<&'a [u8]>>(bytes: &'a [u8]) -> IResult<&'a [u8], Self, E> {
     let (bytes, (magic, minor_version, major_version, constant_pool_count)) =
       tuple((be_u32, be_u16, be_u16, be_u16))(bytes)?;
     if magic != 0xCAFEBABE {
@@ -110,25 +127,6 @@ impl ClassFile {
         attributes,
       },
     ))
-  }
-
-  fn source_file_name(&self) -> String {
-    let source_file = self
-      .attributes
-      .iter()
-      .filter(|attr| attr.type_filter(SOURCE_FILE_ATTRIBUTE_NAME))
-      .map(|attr| attr.get_sourcefile())
-      .next();
-    if let Some(source_file) = source_file {
-      if let Some(file_name) = source_file {
-        return file_name.to_string();
-      }
-    }
-    return "Unknown".to_string();
-  }
-
-  pub fn render_methods_verbose(&self) -> Vec<&MethodInfo> {
-    self.methods.iter().collect::<Vec<&MethodInfo>>()
   }
 }
 

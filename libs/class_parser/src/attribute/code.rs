@@ -8,7 +8,9 @@ use nom::{
   IResult,
 };
 
-use crate::{opcodes::CodeInfo, Parsable};
+use crate::opcodes::CodeInfo;
+
+use base::Parsable;
 
 use super::{parse_attributes, AttributeInfo};
 

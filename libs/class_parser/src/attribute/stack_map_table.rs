@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use nom::number::complete::{be_u16, be_u8};
 
-use crate::Parsable;
+use base::Parsable;
 
 #[derive(Clone)]
 pub struct StackMapTable {

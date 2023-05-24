@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use nom::{error::ParseError, multi::count, number::complete::be_u16, IResult};
 
-use crate::Parsable;
+use base::Parsable;
 
 #[derive(Clone)]
 pub struct LineNumberTableAttribute {

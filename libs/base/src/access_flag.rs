@@ -42,6 +42,10 @@ const ACC_SYNTHETIC: u16 = 0x1000;
 const ACC_ANNOTATION: u16 = 0x2000;
 const ACC_ENUM: u16 = 0x4000;
 
+// for android
+// const ACC_CONSTRUCTOR: u32 = 0x10000;
+// const ACC_DECLARED_SYNCHRONIZED: u32 = 0x20000;
+
 const CLASS_ACC: &[(u16, AccessFlag)] = &[
   (ACC_PUBLIC, AccessFlag::Public),
   (ACC_FINAL, AccessFlag::Final),
@@ -80,7 +84,7 @@ const METHOD_ACC: &[(u16, AccessFlag)] = &[
   (ACC_SYNTHETIC, AccessFlag::Synthetic),
 ];
 
-pub struct AccessFlags(Vec<AccessFlag>);
+pub struct AccessFlags(Vec<AccessFlag>, u16);
 
 impl AccessFlags {
   pub fn new_class_flag(flag: u16) -> Self {
@@ -89,16 +93,16 @@ impl AccessFlags {
       .filter(|(i, _)| flag & i == *i)
       .map(|(_, af)| *af)
       .collect();
-    Self(flags)
+    Self(flags, flag)
   }
 
-  pub fn new_filed_flag(flag: u16) -> Self {
+  pub fn new_field_flag(flag: u16) -> Self {
     let flags = FIELD_ACC
       .iter()
       .filter(|(i, _)| flag & i == *i)
       .map(|(_, af)| *af)
       .collect();
-    Self(flags)
+    Self(flags, flag)
   }
 
   pub fn new_method_flag(flag: u16) -> Self {
@@ -107,7 +111,7 @@ impl AccessFlags {
       .filter(|(i, _)| flag & i == *i)
       .map(|(_, af)| *af)
       .collect();
-    Self(flags)
+    Self(flags, flag)
   }
 }
 
@@ -116,12 +120,14 @@ impl Display for AccessFlags {
     let flags = self.0.clone();
     // flags.sort_by(|a, b| a.cmp(b));
     let mut iter = flags.iter();
+    write!(f, "0x{:04x} (", self.1)?;
     if let Some(flag) = iter.next() {
       write!(f, "{}", flag)?;
       for flag in iter {
         write!(f, ",{}", flag)?;
       }
     }
+    write!(f, ")")?;
     Ok(())
   }
 }

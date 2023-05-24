@@ -3,10 +3,11 @@ use std::fmt::Display;
 use nom::{error::ParseError, number::complete::be_u16, sequence::tuple, IResult};
 
 use crate::{
-  access_flag::AccessFlags,
   attribute::{parse_attributes, AttributeInfo},
-  get_str_const, Parsable,
+  get_str_const,
 };
+
+use base::{access_flag::AccessFlags, Parsable};
 
 pub struct MethodInfo {
   access_flags: AccessFlags,

@@ -51,6 +51,16 @@ pub enum ErrorKind {
   IoError(#[from] std::io::Error),
 }
 
+// impl Display for ErrorKind {
+//   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+//     match self {
+//       Self::NomError { kind } => write!(f, "{}", kind),
+//       Self::IoError(e) => write!(f, "{}", e),
+//       Self::LoggerError(e) => write!(f, "{}", e),
+//     }
+//   }
+// }
+
 impl<'a> From<Err<error::Error<&'a [u8]>>> for ErrorKind {
   fn from(e: Err<error::Error<&'a [u8]>>) -> Self {
     ErrorKind::NomError { kind: e.to_owned() }

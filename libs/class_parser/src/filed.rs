@@ -2,11 +2,9 @@ use std::fmt::Display;
 
 use nom::{error::ParseError, number::complete::be_u16, sequence::tuple, IResult};
 
-use crate::{
-  access_flag::AccessFlags,
-  attribute::{parse_attributes, AttributeInfo},
-  Parsable,
-};
+use crate::attribute::{parse_attributes, AttributeInfo};
+
+use base::{access_flag::AccessFlags, Parsable};
 
 pub struct FieldInfo {
   access_flags: AccessFlags,
@@ -23,7 +21,7 @@ impl Parsable for FieldInfo {
     Ok((
       bytes,
       Self {
-        access_flags: AccessFlags::new_filed_flag(access_flags),
+        access_flags: AccessFlags::new_field_flag(access_flags),
         name_index,
         descriptor_index,
         attributes,

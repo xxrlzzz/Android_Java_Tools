@@ -8,7 +8,8 @@ use nom::{
   IResult,
 };
 
-use crate::{get_constant_pool_ref, get_str_const, Parsable};
+use crate::{get_constant_pool_ref, get_str_const};
+use base::Parsable;
 pub mod code;
 pub mod linenumber_table;
 pub mod stack_map_table;
